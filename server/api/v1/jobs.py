@@ -12,6 +12,7 @@ from server.application.use_cases.generate_audio import run_audio_job
 from server.application.use_cases.generate_image import run_image_job
 from server.application.use_cases.generate_video import run_video_job
 from server.infrastructure.jobs import Job, job_store
+from server.application.use_cases.generate_image_to_image import run_image_to_image_job
 
 router = APIRouter()
 
@@ -61,7 +62,28 @@ async def create_image_job(req: ImageJobRequest):
     asyncio.create_task(run_image_job(job_id, req.model_dump()))
     return job.to_dict()
 
+class ImageToImageJobRequest(BaseModel):
+    prompt: str
+    image_base64: str = Field(..., min_length=100,
+                              description="参考图的 base64（可带 data:image 前缀）")
+    strength: float = Field(default=0.7, ge=0.0, le=1.0)
+    width: int = Field(default=1024, ge=64, le=4096)
+    height: int = Field(default=1024, ge=64, le=4096)
+    engine: str | None = None
 
+@router.post("/image-to-image", status_code=202)
+async def create_i2i_job(req: ImageToImageJobRequest):
+    if not req.prompt.strip():
+        raise HTTPException(400, "prompt 不能为空")
+    if not req.image_base64 or len(req.image_base64) < 100:
+        raise HTTPException(400, "image_base64 不能为空或过短")
+
+    job_id = uuid4().hex
+    job = Job(id=job_id, type="image_to_image")
+    await job_store.create(job)
+    asyncio.create_task(run_image_to_image_job(job_id, req.model_dump()))
+    return job.to_dict()
+    
 @router.post("/video", status_code=202)
 async def create_video_job(req: VideoJobRequest):
     if not req.prompt.strip():
