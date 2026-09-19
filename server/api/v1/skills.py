@@ -74,6 +74,52 @@ SKILL_REGISTRY: dict[str, dict] = {
             },
         ],
     },
+
+    "novel_writer": {
+        "name": "小说生成",
+        "description": "多语言小说生成 + 断点续写（走 dispatcher.chat）",
+        "version": "2.0.0",
+        "actions": [
+            {
+                "id": "generate",
+                "name": "生成小说",
+                "params": [
+                    {"name": "title", "type": "string", "required": True,
+                     "description": "小说标题"},
+                    {"name": "genre", "type": "string", "required": True,
+                     "description": "类型（如：科幻 / 奇幻 / 悬疑）"},
+                    {"name": "outline", "type": "string", "required": True,
+                     "description": "故事大纲"},
+                    {"name": "characters", "type": "string", "required": True,
+                     "description": "角色设定"},
+                    {"name": "chapter_count", "type": "integer",
+                     "default": 3, "min": 1, "max": 20},
+                    {"name": "words_per_chapter", "type": "integer",
+                     "default": 500, "min": 200, "max": 2000},
+                    {"name": "language", "type": "string", "default": "zh",
+                     "description": "zh/en/ja/es/fr/de/it/pt/ko/ar/th/nl/pl/sv/fi/el/he/hi"},
+                    {"name": "style", "type": "string", "default": "细腻"},
+                    {"name": "temperature", "type": "number",
+                     "default": 0.85, "min": 0.0, "max": 1.0},
+                ],
+            },
+            {
+                "id": "continue",
+                "name": "续写",
+                "params": [
+                    {"name": "file", "type": "string", "required": True,
+                     "description": "已有小说文件的本地路径或 URL"},
+                    {"name": "chapter_count", "type": "integer",
+                     "default": 3, "min": 1, "max": 20},
+                ],
+            },
+            {
+                "id": "list_languages",
+                "name": "列出语言",
+                "params": [],
+            },
+        ],
+    },    
 }
 
 
@@ -150,6 +196,9 @@ def _load_skill(name: str):
         elif name == "music_generator":
             from skills.music_generator import MusicMaestro
             inst = MusicMaestro()
+        elif name == "novel_writer":                        # ← 新增
+            from skills.novel_writer import NovelWriter
+            inst = NovelWriter()            
         else:
             return None
     except Exception:

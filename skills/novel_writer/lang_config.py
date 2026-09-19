@@ -1,0 +1,313 @@
+# skills/novel_writer/lang_config.py
+"""17 语言配置。"""
+# ============================================================
+# 多语言配置 - 所有语言相关配置集中管理
+# ============================================================
+LANG_CONFIG = {
+    "zh": {
+        "name": "中文",
+        "system_prompt": "你是一位优秀的小说作家，擅长创作引人入胜的{genre}小说。请用中文创作。",
+        "chapter_format": "第{chapter}章",
+        "summary_prefix": "小说简介",
+        "writing_style": "细腻生动",
+        "language_instruction": "请用中文写作，语言流畅，描写生动。",
+        "labels": {
+            "title": "标题",
+            "genre": "类型",
+            "language": "语言",
+            "model": "模型",
+            "generated_at": "生成时间",
+            "total_words": "总字数",
+            "summary": "小说简介",
+        }
+    },
+    "en": {
+        "name": "English",
+        "system_prompt": "You are an excellent novelist, skilled at creating compelling {genre} novels. Please write in English.",
+        "chapter_format": "Chapter {chapter}",
+        "summary_prefix": "Synopsis",
+        "writing_style": "vivid and engaging",
+        "language_instruction": "Please write in English, with fluent language and vivid descriptions.",
+        "labels": {
+            "title": "Title",
+            "genre": "Genre",
+            "language": "Language",
+            "model": "Model",
+            "generated_at": "Generated At",
+            "total_words": "Total Words",
+            "summary": "Synopsis",
+        }
+    },
+    "ja": {
+        "name": "日本語",
+        "system_prompt": "あなたは優秀な小説作家で、魅力的な{genre}小説を書くのが得意です。日本語で創作してください。",
+        "chapter_format": "第{chapter}章",
+        "summary_prefix": "あらすじ",
+        "writing_style": "繊細で生き生きとした",
+        "language_instruction": "日本語で書いてください。流暢な言語と生き生きとした描写で。",
+        "labels": {
+            "title": "タイトル",
+            "genre": "ジャンル",
+            "language": "言語",
+            "model": "モデル",
+            "generated_at": "生成時間",
+            "total_words": "総文字数",
+            "summary": "あらすじ",
+        }
+    },
+    "es": {
+        "name": "Español",
+        "system_prompt": "Eres un excelente novelista, experto en crear novelas cautivadoras de {genre}. Por favor escribe en español.",
+        "chapter_format": "Capítulo {chapter}",
+        "summary_prefix": "Sinopsis",
+        "writing_style": "vívido y atractivo",
+        "language_instruction": "Por favor escribe en español, con lenguaje fluido y descripciones vívidas.",
+        "labels": {
+            "title": "Título",
+            "genre": "Género",
+            "language": "Idioma",
+            "model": "Modelo",
+            "generated_at": "Generado el",
+            "total_words": "Palabras totales",
+            "summary": "Sinopsis",
+        }
+    },
+    "fr": {
+        "name": "Français",
+        "system_prompt": "Vous êtes un excellent romancier, spécialisé dans l'écriture de romans de {genre} captivants. Veuillez écrire en français.",
+        "chapter_format": "Chapitre {chapter}",
+        "summary_prefix": "Résumé",
+        "writing_style": "vivant et engageant",
+        "language_instruction": "Veuillez écrire en français, avec un langage fluide et des descriptions vivantes.",
+        "labels": {
+            "title": "Titre",
+            "genre": "Genre",
+            "language": "Langue",
+            "model": "Modèle",
+            "generated_at": "Généré le",
+            "total_words": "Mots totaux",
+            "summary": "Résumé",
+        }
+    },
+    "de": {
+        "name": "Deutsch",
+        "system_prompt": "Du bist ein ausgezeichneter Romanautor, der sich auf fesselnde {genre}-Romane spezialisiert hat. Bitte schreibe auf Deutsch.",
+        "chapter_format": "Kapitel {chapter}",
+        "summary_prefix": "Zusammenfassung",
+        "writing_style": "lebendig und fesselnd",
+        "language_instruction": "Bitte schreibe auf Deutsch, mit fließender Sprache und lebendigen Beschreibungen.",
+        "labels": {
+            "title": "Titel",
+            "genre": "Genre",
+            "language": "Sprache",
+            "model": "Modell",
+            "generated_at": "Erstellt am",
+            "total_words": "Wörter insgesamt",
+            "summary": "Zusammenfassung",
+        }
+    },
+    "it": {
+        "name": "Italiano",
+        "system_prompt": "Sei un eccellente romanziere, esperto nella scrittura di avvincenti romanzi di {genre}. Per favore scrivi in italiano.",
+        "chapter_format": "Capitolo {chapter}",
+        "summary_prefix": "Sinossi",
+        "writing_style": "vivido e coinvolgente",
+        "language_instruction": "Per favore scrivi in italiano, con linguaggio fluente e descrizioni vivide.",
+        "labels": {
+            "title": "Titolo",
+            "genre": "Genere",
+            "language": "Lingua",
+            "model": "Modello",
+            "generated_at": "Generato il",
+            "total_words": "Parole totali",
+            "summary": "Sinossi",
+        }
+    },
+    "pt": {
+        "name": "Português",
+        "system_prompt": "Você é um excelente romancista, especializado em escrever romances de {genre} cativantes. Por favor, escreva em português.",
+        "chapter_format": "Capítulo {chapter}",
+        "summary_prefix": "Sinopse",
+        "writing_style": "vívido e envolvente",
+        "language_instruction": "Por favor, escreva em português, com linguagem fluente e descrições vívidas.",
+        "labels": {
+            "title": "Título",
+            "genre": "Gênero",
+            "language": "Idioma",
+            "model": "Modelo",
+            "generated_at": "Gerado em",
+            "total_words": "Palavras totais",
+            "summary": "Sinopse",
+        }
+    },
+    "ko": {
+        "name": "한국어",
+        "system_prompt": "당신은 훌륭한 소설가이며, 매력적인 {genre} 소설을 쓰는 데 능숙합니다. 한국어로 창작해 주세요.",
+        "chapter_format": "제{chapter}장",
+        "summary_prefix": "줄거리",
+        "writing_style": "생생하고 매력적인",
+        "language_instruction": "한국어로 작성해 주세요. 유창한 언어와 생생한 묘사로.",
+        "labels": {
+            "title": "제목",
+            "genre": "장르",
+            "language": "언어",
+            "model": "모델",
+            "generated_at": "생성 시간",
+            "total_words": "총 글자수",
+            "summary": "줄거리",
+        }
+    },
+    "ar": {
+        "name": "العربية",
+        "system_prompt": "أنت روائي ممتاز، ماهر في كتابة روايات {genre} الآسرة. يرجى الكتابة باللغة العربية.",
+        "chapter_format": "الفصل {chapter}",
+        "summary_prefix": "ملخص",
+        "writing_style": "حيوي وجذاب",
+        "language_instruction": "يرجى الكتابة باللغة العربية، بلغة سلسة ووصف حيوي.",
+        "labels": {
+            "title": "العنوان",
+            "genre": "النوع",
+            "language": "اللغة",
+            "model": "النموذج",
+            "generated_at": "تاريخ الإنشاء",
+            "total_words": "إجمالي الكلمات",
+            "summary": "ملخص",
+        }
+    },
+    "th": {
+        "name": "ภาษาไทย",
+        "system_prompt": "คุณเป็นนักเขียนนวนิยายที่ยอดเยี่ยม เชี่ยวชาญในการเขียนนวนิยายแนว {genre} ที่น่าดึงดูด กรุณาเขียนเป็นภาษาไทย",
+        "chapter_format": "บทที่ {chapter}",
+        "summary_prefix": "เรื่องย่อ",
+        "writing_style": "มีชีวิตชีวาและน่าดึงดูด",
+        "language_instruction": "กรุณาเขียนเป็นภาษาไทย ด้วยภาษาที่ไหลลื่นและคำอธิบายที่มีชีวิตชีวา",
+        "labels": {
+            "title": "ชื่อเรื่อง",
+            "genre": "ประเภท",
+            "language": "ภาษา",
+            "model": "โมเดล",
+            "generated_at": "สร้างเมื่อ",
+            "total_words": "จำนวนคำทั้งหมด",
+            "summary": "เรื่องย่อ",
+        }
+    },
+    "nl": {
+        "name": "Nederlands",
+        "system_prompt": "Je bent een uitstekende romanschrijver, bedreven in het schrijven van meeslepende {genre} romans. Schrijf alsjeblieft in het Nederlands.",
+        "chapter_format": "Hoofdstuk {chapter}",
+        "summary_prefix": "Samenvatting",
+        "writing_style": "levendig en boeiend",
+        "language_instruction": "Schrijf alsjeblieft in het Nederlands, met vloeiende taal en levendige beschrijvingen.",
+        "labels": {
+            "title": "Titel",
+            "genre": "Genre",
+            "language": "Taal",
+            "model": "Model",
+            "generated_at": "Gegenereerd op",
+            "total_words": "Totaal woorden",
+            "summary": "Samenvatting",
+        }
+    },
+    "pl": {
+        "name": "Polski",
+        "system_prompt": "Jesteś znakomitym powieściopisarzem, specjalizującym się w pisaniu wciągających powieści z gatunku {genre}. Proszę pisać po polsku.",
+        "chapter_format": "Rozdział {chapter}",
+        "summary_prefix": "Streszczenie",
+        "writing_style": "żywy i wciągający",
+        "language_instruction": "Proszę pisać po polsku, płynnym językiem i żywymi opisami.",
+        "labels": {
+            "title": "Tytuł",
+            "genre": "Gatunek",
+            "language": "Język",
+            "model": "Model",
+            "generated_at": "Wygenerowano",
+            "total_words": "Całkowita liczba słów",
+            "summary": "Streszczenie",
+        }
+    },
+    "sv": {
+        "name": "Svenska",
+        "system_prompt": "Du är en utmärkt romanförfattare, skicklig på att skriva fängslande {genre}-romaner. Vänligen skriv på svenska.",
+        "chapter_format": "Kapitel {chapter}",
+        "summary_prefix": "Sammanfattning",
+        "writing_style": "livfull och engagerande",
+        "language_instruction": "Vänligen skriv på svenska, med flytande språk och livfulla beskrivningar.",
+        "labels": {
+            "title": "Titel",
+            "genre": "Genre",
+            "language": "Språk",
+            "model": "Modell",
+            "generated_at": "Genererad",
+            "total_words": "Totalt antal ord",
+            "summary": "Sammanfattning",
+        }
+    },
+    "fi": {
+        "name": "Suomi",
+        "system_prompt": "Olet erinomainen romaanikirjailija, joka on taitava kirjoittamaan vangitsevia {genre}-romaaneja. Kirjoita suomeksi.",
+        "chapter_format": "Luku {chapter}",
+        "summary_prefix": "Yhteenveto",
+        "writing_style": "elävä ja mukaansatempaava",
+        "language_instruction": "Kirjoita suomeksi, sujuvalla kielellä ja elävillä kuvauksilla.",
+        "labels": {
+            "title": "Otsikko",
+            "genre": "Laji",
+            "language": "Kieli",
+            "model": "Malli",
+            "generated_at": "Luotu",
+            "total_words": "Sanat yhteensä",
+            "summary": "Yhteenveto",
+        }
+    },
+    "el": {
+        "name": "Ελληνικά",
+        "system_prompt": "Είστε ένας εξαιρετικός μυθιστοριογράφος, ικανός στη συγγραφή συναρπαστικών μυθιστορημάτων {genre}. Παρακαλώ γράψτε στα ελληνικά.",
+        "chapter_format": "Κεφάλαιο {chapter}",
+        "summary_prefix": "Περίληψη",
+        "writing_style": "ζωντανό και συναρπαστικό",
+        "language_instruction": "Παρακαλώ γράψτε στα ελληνικά, με ευχάριστη γλώσσα και ζωντανές περιγραφές.",
+        "labels": {
+            "title": "Τίτλος",
+            "genre": "Είδος",
+            "language": "Γλώσσα",
+            "model": "Μοντέλο",
+            "generated_at": "Δημιουργήθηκε",
+            "total_words": "Σύνολο λέξεων",
+            "summary": "Περίληψη",
+        }
+    },
+    "he": {
+        "name": "עברית",
+        "system_prompt": "אתה סופר מצוין, מיומן בכתיבת רומני {genre} מרתקים. אנא כתוב בעברית.",
+        "chapter_format": "פרק {chapter}",
+        "summary_prefix": "תקציר",
+        "writing_style": "חי ומרתק",
+        "language_instruction": "אנא כתוב בעברית, בשפה רהוטה ותיאורים חיים.",
+        "labels": {
+            "title": "כותרת",
+            "genre": "ז'אנר",
+            "language": "שפה",
+            "model": "מודל",
+            "generated_at": "תאריך יצירה",
+            "total_words": "סה\"כ מילים",
+            "summary": "תקציר",
+        }
+    },
+    "hi": {
+        "name": "हिन्दी",
+        "system_prompt": "आप एक उत्कृष्ट उपन्यासकार हैं, {genre} उपन्यास लिखने में कुशल हैं। कृपया हिंदी में लिखें।",
+        "chapter_format": "अध्याय {chapter}",
+        "summary_prefix": "सारांश",
+        "writing_style": "जीवंत और आकर्षक",
+        "language_instruction": "कृपया हिंदी में लिखें, सरल भाषा और जीवंत वर्णन के साथ।",
+        "labels": {
+            "title": "शीर्षक",
+            "genre": "शैली",
+            "language": "भाषा",
+            "model": "मॉडल",
+            "generated_at": "निर्माण तिथि",
+            "total_words": "कुल शब्द",
+            "summary": "सारांश",
+        }
+    },
+}
