@@ -1,3 +1,4 @@
+// apps/mobile/lib/pages/assets/assets_page.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -7,6 +8,7 @@ import '../../widgets/image_viewer.dart';
 
 class AssetsPage extends StatefulWidget {
   const AssetsPage({super.key});
+
   @override
   State<AssetsPage> createState() => _AssetsPageState();
 }
@@ -14,21 +16,38 @@ class AssetsPage extends StatefulWidget {
 class _AssetsPageState extends State<AssetsPage> {
   List<WorkItem> _works = [];
   bool _firstLoading = true;
+  bool _refreshing = false;
+  String? _lastBaseUrl;
 
   @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _refresh());
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // 监听 ConnectionManager：baseUrl 变化（连接/重连）时自动刷新
+    final cm = context.watch<ConnectionManager>();
+    final baseUrl = cm.api.baseUrl;
+
+    if (baseUrl != _lastBaseUrl) {
+      _lastBaseUrl = baseUrl;
+      // 连上后延迟一点点，等 ping 完成
+      Future.microtask(() => _refresh());
+    }
   }
 
   Future<void> _refresh() async {
-    final cm = context.read<ConnectionManager>();
-    final list = await cm.api.listWorks(limit: 100);
-    if (!mounted) return;
-    setState(() {
-      _works = list;
-      _firstLoading = false;
-    });
+    if (_refreshing) return;
+    _refreshing = true;
+
+    try {
+      final cm = context.read<ConnectionManager>();
+      final list = await cm.api.listWorks(limit: 100);
+      if (!mounted) return;
+      setState(() {
+        _works = list;
+        _firstLoading = false;
+      });
+    } finally {
+      _refreshing = false;
+    }
   }
 
   @override
@@ -87,7 +106,6 @@ class _AssetsPageState extends State<AssetsPage> {
                                       color: Colors.grey),
                                 ),
                               ),
-                              // 底部渐变 + prompt 文字
                               if (w.prompt != null && w.prompt!.isNotEmpty)
                                 Positioned(
                                   left: 0,
@@ -102,7 +120,8 @@ class _AssetsPageState extends State<AssetsPage> {
                                         end: Alignment.bottomCenter,
                                         colors: [
                                           Colors.transparent,
-                                          Colors.black.withOpacity(0.6),
+                                          Colors.black
+                                              .withValues(alpha: 0.6),
                                         ],
                                       ),
                                     ),

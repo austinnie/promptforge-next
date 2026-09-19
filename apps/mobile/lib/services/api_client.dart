@@ -249,10 +249,15 @@ class ApiClient {
             : (data as List);
         return list
             .map((e) => WorkItem.fromJson(e as Map<String, dynamic>))
-            .where((w) => w.url.isNotEmpty)      // 过滤掉还没生成成功的
+            .where((w) => w.url.isNotEmpty)
             .toList();
       }
-    } catch (_) {}
+      // ignore: avoid_print
+      print('[listWorks] HTTP ${r.statusCode}: ${r.body}');
+    } catch (e) {
+      // ignore: avoid_print
+      print('[listWorks] error: $e');
+    }
     return [];
   }
 
