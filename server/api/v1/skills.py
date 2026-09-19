@@ -119,6 +119,31 @@ SKILL_REGISTRY: dict[str, dict] = {
                 "params": [],
             },
         ],
+    }, 
+    
+    "tech_hot_article": {
+        "name": "技术热点文章",
+        "description": "抓取技术热点 + LLM 写稿 + AI 配图 + Word 导出",
+        "version": "2.0.0",
+        "actions": [
+            {
+                "id": "list_hot",
+                "name": "列出热点",
+                "params": [],
+            },
+            {
+                "id": "generate",
+                "name": "生成文章",
+                "params": [
+                    {"name": "hot_index", "type": "integer",
+                     "description": "选择第几条热点（不填则随机）"},
+                    {"name": "style", "type": "string", "default": "",
+                     "description": "写作风格（不填则随机）：专业分析型 / 通俗科普型 / 深度技术型 / 行业观察型 / 趋势预测型"},
+                    {"name": "article_words", "type": "integer", "default": 1500},
+                    {"name": "with_images", "type": "boolean", "default": True},
+                ],
+            },
+        ],
     },    
 }
 
@@ -198,7 +223,11 @@ def _load_skill(name: str):
             inst = MusicMaestro()
         elif name == "novel_writer":                        # ← 新增
             from skills.novel_writer import NovelWriter
-            inst = NovelWriter()            
+            inst = NovelWriter()  
+            
+        elif name == "tech_hot_article":
+            from skills.tech_hot_article import TechHotArticle
+            inst = TechHotArticle()            
         else:
             return None
     except Exception:
