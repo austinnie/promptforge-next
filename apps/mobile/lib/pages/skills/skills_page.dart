@@ -1,14 +1,10 @@
 // apps/mobile/lib/pages/skills/skills_page.dart
-//
-// 技能页：动态加载 skills 元数据 → 根据 action.params 生成表单 → 执行。
-//
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../services/connection_manager.dart';
 import '../../services/skills_api.dart';
-
-/// 默认后端地址。接入 ConnectionManager 后可替换为动态获取。
-const String _kDefaultBackend = 'http://localhost:8000';
 
 class SkillsPage extends StatefulWidget {
   const SkillsPage({super.key});
@@ -18,8 +14,8 @@ class SkillsPage extends StatefulWidget {
 }
 
 class _SkillsPageState extends State<SkillsPage> {
-  late SkillsApi _api;
-  String _baseUrl = _kDefaultBackend;
+  SkillsApi? _api;
+  String _baseUrl = '';
 
   List<Map<String, dynamic>> _skills = [];
   Map<String, dynamic>? _currentSkill;
@@ -29,28 +25,35 @@ class _SkillsPageState extends State<SkillsPage> {
   bool _running = false;
   String? _error;
 
-  /// 当前 action 的参数表单值
   final Map<String, dynamic> _formValues = {};
-
-  /// 上一次执行结果
   Map<String, dynamic>? _lastResult;
 
   @override
-  void initState() {
-    super.initState();
-    _api = SkillsApi(_baseUrl);
-    _loadSkills();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final cm = context.watch<ConnectionManager>();
+    final baseUrl = cm.api.baseUrl;
+
+    // baseUrl 变化（首次连接/重连）时重建 api 并刷新
+    if (baseUrl.isNotEmpty && baseUrl != _baseUrl) {
+      _baseUrl = baseUrl;
+      _api = SkillsApi(baseUrl);
+      _loadSkills();
+    }
   }
 
   // ==================== 数据加载 ====================
 
   Future<void> _loadSkills() async {
+    final api = _api;
+    if (api == null) return;
+
     setState(() {
       _loading = true;
       _error = null;
     });
     try {
-      final skills = await _api.listSkills();
+      final skills = await api.listSkills();     // ← 用局部 api
       if (!mounted) return;
       setState(() {
         _skills = skills;
@@ -105,14 +108,17 @@ class _SkillsPageState extends State<SkillsPage> {
   // ==================== 执行 ====================
 
   Future<void> _execute() async {
-    if (_currentSkill == null || _currentAction == null) return;
+    final api = _api;
+    if (api == null || _currentSkill == null || _currentAction == null) {
+      return;
+    }
     setState(() {
       _running = true;
       _error = null;
       _lastResult = null;
     });
     try {
-      final result = await _api.execute(
+      final result = await api.execute(          // ← 用局部 api
         _currentSkill!['id'] as String,
         _currentAction!['id'] as String,
         params: Map<String, dynamic>.from(_formValues),
