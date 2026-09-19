@@ -144,6 +144,34 @@ SKILL_REGISTRY: dict[str, dict] = {
                 ],
             },
         ],
+    },  
+    
+    "news_aggregator": {
+        "name": "新闻聚合",
+        "description": "RSS 新闻抓取 + 去重 + AI 摘要（可选）",
+        "version": "2.0.0",
+        "actions": [
+            {
+                "id": "list_feeds",
+                "name": "列出新闻源",
+                "params": [],
+            },
+            {
+                "id": "fetch",
+                "name": "抓取新闻",
+                "params": [
+                    {"name": "category", "type": "string", "default": "",
+                     "description": "分类：tech / business / world / china / japan / korea / usa（不填=全部）"},
+                    {"name": "sources", "type": "string", "default": "",
+                     "description": "自定义源关键词（逗号分隔，如：nhk,bbc）"},
+                    {"name": "top_n", "type": "integer", "default": 50},
+                    {"name": "validate", "type": "boolean", "default": True,
+                     "description": "是否验证 RSS 源可用性（首次慢，之后有缓存）"},
+                    {"name": "with_summary", "type": "boolean", "default": False,
+                     "description": "是否生成 AI 摘要（消耗 LLM）"},
+                ],
+            },
+        ],
     },    
 }
 
@@ -227,7 +255,11 @@ def _load_skill(name: str):
             
         elif name == "tech_hot_article":
             from skills.tech_hot_article import TechHotArticle
-            inst = TechHotArticle()            
+            inst = TechHotArticle()   
+            
+        elif name == "news_aggregator":
+            from skills.news_aggregator import NewsAggregator
+            inst = NewsAggregator()            
         else:
             return None
     except Exception:
