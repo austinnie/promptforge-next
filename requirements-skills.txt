@@ -1,20 +1,16 @@
-# Skills 附加依赖（按需安装）
-# 不装 torch / diffusers
+# PromptForge-Next Skills 附加依赖
+# 按需安装，不影响主后端
+
+# ---- 语音合成 ----
+edge-tts>=6.1.0
+mutagen>=1.47.0
+
+# ---- 音乐生成（纯 MIDI） ----
+midiutil>=1.2.1
 
 # ---- 文章 / 排版 ----
 markdown>=3.7.0
 python-docx>=1.1.0
-xhtml2pdf>=0.2.16
 
-# ---- 语音 ----
-edge-tts>=6.1.0
-mutagen>=1.47.0
-
-# ---- 音乐 ----
-midiutil>=1.2.1
-
-# ---- 视频合成 ----
-moviepy>=2.0.0
-
-# ---- 发布平台 ----
-# patchright>=1.48.0
+# ---- 视频合成（可选，需系统装 ffmpeg） ----
+# moviepy>=2.0.0
