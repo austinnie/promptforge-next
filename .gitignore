@@ -49,3 +49,39 @@ Thumbs.db
 *.bin
 *.pth
 *.sf2
+
+
+# ---- Flutter ----
+apps/mobile/.dart_tool/
+apps/mobile/build/
+apps/mobile/.flutter-plugins
+apps/mobile/.flutter-plugins-dependencies
+apps/mobile/.packages
+apps/mobile/.metadata
+apps/mobile/pubspec.lock
+
+# ---- Flutter · Android ----
+apps/mobile/android/.gradle/
+apps/mobile/android/captures/
+apps/mobile/android/local.properties
+apps/mobile/android/**/GeneratedPluginRegistrant.java
+apps/mobile/android/app/debug/
+apps/mobile/android/app/profile/
+apps/mobile/android/app/release/
+apps/mobile/android/key.properties
+*.jks
+*.keystore
+
+# ---- Flutter · iOS ----
+apps/mobile/ios/Pods/
+apps/mobile/ios/.symlinks/
+apps/mobile/ios/Flutter/Generated.xcconfig
+apps/mobile/ios/Flutter/flutter_export_environment.sh
+apps/mobile/ios/Flutter/ephemeral/
+apps/mobile/ios/Runner/GeneratedPluginRegistrant.*
+apps/mobile/ios/Flutter/App.framework/
+apps/mobile/ios/Flutter/Flutter.framework/
+apps/mobile/ios/Flutter/Flutter.podspec
+
+# ---- Flutter · Windows ----
+apps/mobile/windows/flutter/ephemeral/

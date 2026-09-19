@@ -1,0 +1,29 @@
+name: promptforge_mobile
+description: PromptForge Flutter 客户端（PC + 移动）
+publish_to: "none"
+version: 0.1.0+1
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.6
+  http: ^1.2.0
+  web_socket_channel: ^2.4.0
+  shared_preferences: ^2.2.2
+  provider: ^6.1.1
+  mobile_scanner: ^5.1.0
+  qr_flutter: ^4.1.0
+  cached_network_image: ^3.3.1
+  path_provider: ^2.1.2
+  url_launcher: ^6.2.4
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  
+flutter:
+  uses-material-design: true
