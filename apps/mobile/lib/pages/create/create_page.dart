@@ -1,5 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import '../../models/task.dart';
 import '../../services/connection_manager.dart';
 
 class CreatePage extends StatefulWidget {
@@ -16,6 +20,10 @@ class _CreatePageState extends State<CreatePage> {
   String? _msg;
   List<String> _presets = [];
 
+  // === 轮询相关 ===
+  Timer? _pollTimer;
+  TaskItem? _currentTask;   // 当前正在跟踪的任务
+
   @override
   void initState() {
     super.initState();
@@ -30,11 +38,15 @@ class _CreatePageState extends State<CreatePage> {
 
   @override
   void dispose() {
+    _pollTimer?.cancel();
     _promptCtrl.dispose();
     _presetCtrl.dispose();
     super.dispose();
   }
 
+  // ============================================================
+  // 提交
+  // ============================================================
   Future<void> _submit() async {
     final cm = context.read<ConnectionManager>();
     final prompt = _promptCtrl.text.trim();
@@ -45,7 +57,14 @@ class _CreatePageState extends State<CreatePage> {
       return;
     }
 
-    setState(() { _busy = true; _msg = null; });
+    // 停掉上一个任务的轮询（用户可能连续提交）
+    _pollTimer?.cancel();
+
+    setState(() {
+      _busy = true;
+      _msg = null;
+      _currentTask = null;
+    });
 
     final params = <String, dynamic>{
       'width': _width,
@@ -60,15 +79,71 @@ class _CreatePageState extends State<CreatePage> {
     );
 
     if (!mounted) return;
+
+    if (task == null) {
+      setState(() {
+        _busy = false;
+        _msg = '❌ 创建任务失败';
+      });
+      return;
+    }
+
     setState(() {
       _busy = false;
-      _msg = task == null ? '❌ 创建任务失败' : '✅ 已提交任务 ${task.id}';
+      _msg = '✅ 已提交任务 ${task.id}，正在生成…';
+      _currentTask = task;
     });
-    if (task != null) _promptCtrl.clear();
+    _promptCtrl.clear();
+
+    // 开始轮询
+    _startPolling(task.id);
   }
 
+  // ============================================================
+  // 轮询
+  // ============================================================
+  void _startPolling(String jobId) {
+    _pollTimer?.cancel();
+    _pollTimer = Timer.periodic(const Duration(seconds: 2), (t) async {
+      if (!mounted) {
+        t.cancel();
+        return;
+      }
+
+      final cm = context.read<ConnectionManager>();
+      final latest = await cm.api.getTask(jobId);
+      if (!mounted) {
+        t.cancel();
+        return;
+      }
+
+      if (latest == null) return;
+
+      setState(() => _currentTask = latest);
+
+      // 终态：停轮询
+      if (latest.status == TaskStatus.success ||
+          latest.status == TaskStatus.failed ||
+          latest.status == TaskStatus.cancelled) {
+        t.cancel();
+        if (latest.status == TaskStatus.success) {
+          setState(() => _msg = '🎉 生成完成');
+        } else if (latest.status == TaskStatus.failed) {
+          setState(() => _msg = '❌ 生成失败：${latest.error ?? "未知错误"}');
+        } else {
+          setState(() => _msg = '⏹️ 已取消');
+        }
+      }
+    });
+  }
+
+  // ============================================================
+  // UI
+  // ============================================================
   @override
   Widget build(BuildContext context) {
+    final cm = context.read<ConnectionManager>();
+
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
@@ -135,11 +210,140 @@ class _CreatePageState extends State<CreatePage> {
               : const Icon(Icons.send),
           label: Text(_busy ? '提交中…' : '提交生成'),
         ),
+
         if (_msg != null) ...[
           const SizedBox(height: 12),
-          Text(_msg!),
+          Text(
+            _msg!,
+            style: TextStyle(
+              color: _msg!.startsWith('❌')
+                  ? Colors.red
+                  : _msg!.startsWith('🎉')
+                      ? Colors.green
+                      : null,
+            ),
+          ),
+        ],
+
+        // ===== 任务实时状态卡片 =====
+        if (_currentTask != null) ...[
+          const SizedBox(height: 20),
+          _TaskStatusCard(
+            task: _currentTask!,
+            fileUrl: cm.api.fileUrl,
+          ),
         ],
       ],
+    );
+  }
+}
+
+// ============================================================
+// 任务状态卡片
+// ============================================================
+class _TaskStatusCard extends StatelessWidget {
+  final TaskItem task;
+  final String Function(String) fileUrl;
+
+  const _TaskStatusCard({
+    required this.task,
+    required this.fileUrl,
+  });
+
+  String _statusLabel(TaskStatus s) {
+    switch (s) {
+      case TaskStatus.pending:
+        return '⏳ 等待中';
+      case TaskStatus.running:
+        return '🎨 生成中';
+      case TaskStatus.success:
+        return '✅ 已完成';
+      case TaskStatus.failed:
+        return '❌ 失败';
+      case TaskStatus.cancelled:
+        return '⏹️ 已取消';
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isDone = task.status == TaskStatus.success;
+    final isFailed = task.status == TaskStatus.failed;
+
+    return Card(
+      elevation: 2,
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // 状态行
+            Row(
+              children: [
+                Text(
+                  _statusLabel(task.status),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                  ),
+                ),
+                const Spacer(),
+                Text(
+                  '${(task.progress * 100).toStringAsFixed(0)}%',
+                  style: const TextStyle(color: Colors.grey),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+
+            // 进度条
+            LinearProgressIndicator(value: task.progress),
+            const SizedBox(height: 12),
+
+            // 图片（完成后显示）
+            if (isDone && task.resultUrl != null && task.resultUrl!.isNotEmpty)
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.network(
+                  fileUrl(task.resultUrl!),
+                  fit: BoxFit.contain,
+                  loadingBuilder: (ctx, child, progress) {
+                    if (progress == null) return child;
+                    return const SizedBox(
+                      height: 200,
+                      child: Center(child: CircularProgressIndicator()),
+                    );
+                  },
+                  errorBuilder: (ctx, err, st) => Container(
+                    height: 120,
+                    alignment: Alignment.center,
+                    color: Colors.red.shade50,
+                    child: Text(
+                      '图片加载失败\n${fileUrl(task.resultUrl!)}',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(color: Colors.red, fontSize: 12),
+                    ),
+                  ),
+                ),
+              ),
+
+            // 失败信息
+            if (isFailed && task.error != null) ...[
+              const SizedBox(height: 8),
+              Text(
+                task.error!,
+                style: const TextStyle(color: Colors.red, fontSize: 13),
+              ),
+            ],
+
+            const SizedBox(height: 8),
+            SelectableText(
+              'ID: ${task.id}',
+              style: const TextStyle(fontSize: 11, color: Colors.grey),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

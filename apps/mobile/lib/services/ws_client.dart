@@ -1,14 +1,17 @@
+// apps/mobile/lib/services/ws_client.dart
 import 'dart:async';
-import 'dart:convert';
-import 'package:web_socket_channel/web_socket_channel.dart';
-import '../core/app_config.dart';
 
+/// 后端 WebSocket 端点是「每个 job 一个连接」：
+///     /api/v1/jobs/{job_id}/events
+/// 没有全局 /ws 广播端点。
+///
+/// 现有 UI 用的是全局单连接，架构不匹配。为避免无意义的 403 重连刷屏，
+/// 这里暂时把 WsClient 改成空实现；任务状态改用「创建后轮询 GET /jobs/{id}」。
+///
+/// 未来若要把 ws 用起来，请在 UI 层改成：针对每个 jobId 建立一条 ws 连接。
 class WsClient {
   final String baseUrl;
-  WebSocketChannel? _channel;
-  StreamSubscription? _sub;
-  Timer? _pingTimer;
-  bool _closedByUser = false;
+  WsClient(this.baseUrl);
 
   final _events = StreamController<Map<String, dynamic>>.broadcast();
   Stream<Map<String, dynamic>> get events => _events.stream;
@@ -16,65 +19,15 @@ class WsClient {
   final _connState = StreamController<bool>.broadcast();
   Stream<bool> get connectionState => _connState.stream;
 
-  WsClient(this.baseUrl);
-
   Future<void> connect() async {
-    _closedByUser = false;
-    await _open();
-  }
-
-  Future<void> _open() async {
-    try {
-      final uri = Uri.parse('${baseUrl.replaceFirst('http', 'ws')}/ws');
-      _channel = WebSocketChannel.connect(uri);
-      await _channel!.ready;
-      _connState.add(true);
-
-      _sub = _channel!.stream.listen(
-        (data) {
-          try {
-            final obj = jsonDecode(data as String) as Map<String, dynamic>;
-            _events.add(obj);
-          } catch (_) {}
-        },
-        onError: (_) => _scheduleReconnect(),
-        onDone: () => _scheduleReconnect(),
-        cancelOnError: true,
-      );
-
-      _pingTimer?.cancel();
-      _pingTimer = Timer.periodic(AppConfig.wsPingInterval, (_) {
-        try {
-          _channel?.sink.add(jsonEncode({'type': 'ping'}));
-        } catch (_) {}
-      });
-    } catch (_) {
-      _connState.add(false);
-      _scheduleReconnect();
-    }
-  }
-
-  void _scheduleReconnect() {
-    if (_closedByUser) return;
-    _connState.add(false);
-    _pingTimer?.cancel();
-    _sub?.cancel();
-    Future.delayed(AppConfig.wsReconnectDelay, () {
-      if (!_closedByUser) _open();
-    });
+    _connState.add(false);   // 不建立实际连接
   }
 
   Future<void> close() async {
-    _closedByUser = true;
-    _pingTimer?.cancel();
-    await _sub?.cancel();
-    await _channel?.sink.close();
-    _channel = null;
     _connState.add(false);
   }
 
   void dispose() {
-    close();
     _events.close();
     _connState.close();
   }

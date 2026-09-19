@@ -33,7 +33,7 @@ async def create_image_job(req: ImageJobRequest):
     # 后台异步跑
     asyncio.create_task(run_image_job(job_id, req.model_dump()))
 
-    return {"job_id": job_id, "status": "queued"}
+    return job.to_dict()
 
 
 @router.get("")
