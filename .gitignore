@@ -1,0 +1,51 @@
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.so
+.Python
+venv/
+.venv/
+env/
+.env
+.env.local
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# ---- 运行时数据（本地） ----
+data/assets/*
+!data/assets/.gitkeep
+data/logs/*
+!data/logs/.gitkeep
+data/db/*
+!data/db/.gitkeep
+
+# ---- 敏感文件（绝不入库） ----
+.wechat_state.json
+cookies/
+*/cookies/*.json
+skills/social_auto_upload/cookies/*.json
+
+# ---- Flutter ----
+apps/mobile/build/
+apps/mobile/.dart_tool/
+apps/mobile/.flutter-plugins
+apps/mobile/.flutter-plugins-dependencies
+apps/mobile/.packages
+
+# ---- IDE ----
+.vscode/
+.idea/
+*.swp
+
+# ---- 系统 ----
+.DS_Store
+Thumbs.db
+
+# ---- 大文件 ----
+*.safetensors
+*.ckpt
+*.bin
+*.pth
+*.sf2
