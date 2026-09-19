@@ -86,13 +86,45 @@ class ApiClient {
           .timeout(AppConfig.httpTimeout);
       if (r.statusCode == 200) {
         final data = jsonDecode(utf8.decode(r.bodyBytes));
-        // 后端可能返回 {items: [...]} 或直接 [...]
-        final list = (data is Map && data['items'] is List)
-            ? data['items'] as List
-            : (data as List);
-        return list.map((e) => e.toString()).toList();
+        final result = <String>[];
+
+        // 后端返回：{"机甲": [{name, display}, ...], "国风": [...], ...}
+        if (data is Map) {
+          for (final entry in data.entries) {
+            final v = entry.value;
+            if (v is List) {
+              for (final item in v) {
+                if (item is Map) {
+                  final display = item['display']?.toString();
+                  final name = item['name']?.toString();
+                  if (display != null && display.isNotEmpty) {
+                    result.add(display);
+                  } else if (name != null && name.isNotEmpty) {
+                    result.add(name);
+                  }
+                } else if (item is String) {
+                  result.add(item);
+                }
+              }
+            }
+          }
+        } else if (data is List) {
+          // 兼容扁平列表
+          for (final item in data) {
+            if (item is String) {
+              result.add(item);
+            } else if (item is Map) {
+              final d = item['display'] ?? item['name'];
+              if (d != null) result.add(d.toString());
+            }
+          }
+        }
+        return result;
       }
-    } catch (e) { print('[api_client] $e'); }
+    } catch (e) {
+      // ignore: avoid_print
+      print('[listPresets] $e');
+    }
     return [];
   }
 

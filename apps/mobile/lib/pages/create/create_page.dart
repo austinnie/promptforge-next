@@ -176,7 +176,15 @@ class _CreatePageState extends State<CreatePage> {
                   .take(200)
                   .map((p) => DropdownMenuItem(value: p, child: Text(p)))
                   .toList(),
-              onChanged: (v) => setState(() => _presetCtrl.text = v ?? ''),
+              
+			  onChanged: (v) {
+			    if (v == null || v.isEmpty) return;
+			    // "mecha_glow — 机甲发光" → "mecha_glow"
+			    final name = v.contains(' — ')
+			  	  ? v.split(' — ').first.trim()
+			  	  : v.trim();
+			    setState(() => _presetCtrl.text = name);
+			  },			  
             ),
         ]),
         const SizedBox(height: 12),
