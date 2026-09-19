@@ -17,6 +17,7 @@ except ImportError:
 from . import mock          # noqa: F401
 from . import pollinations  # noqa: F401
 from . import agnes         # noqa: F401
+from . import freeapi       # noqa: F401   ← 新增
 from . import siliconflow   # noqa: F401
 from . import openrouter    # noqa: F401
 

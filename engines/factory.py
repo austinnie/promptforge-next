@@ -13,10 +13,17 @@ ENGINE_ENV_KEYS: Dict[str, Dict[str, str]] = {
         "api_key": "AGNES_API_KEY",
         "base_url": "AGNES_BASE_URL",
         "image_model": "AGNES_IMAGE_MODEL",
+        "text_model": "AGNES_TEXT_MODEL",
+        "video_model": "AGNES_VIDEO_MODEL",
+        "vision_model": "AGNES_VISION_MODEL",
+        "audio_model": "AGNES_AUDIO_MODEL",
     },
     "pollinations": {
         "api_key": "POLLINATIONS_API_KEY",
         "model": "POLLINATIONS_MODEL",
+    },
+    "freeapi": {
+        "model": "FREEAPI_MODEL",
     },
     "siliconflow": {
         "api_key": "SILICONFLOW_API_KEY",
@@ -51,7 +58,7 @@ def create(name: str, overrides: dict | None = None) -> BaseEngine:
 def is_configured(name: str) -> bool:
     """粗略判断引擎是否已配置好（用于 dispatcher 跳过无 key 的引擎）。"""
     keymap = ENGINE_ENV_KEYS.get(name, {})
-    # mock 永远可用
+    # mock / freeapi 无 keymap 或无需 key
     if not keymap:
         return True
     for arg_name, env_name in keymap.items():
