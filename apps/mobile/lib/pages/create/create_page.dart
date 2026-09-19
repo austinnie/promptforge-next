@@ -169,23 +169,41 @@ class _CreatePageState extends State<CreatePage> {
             ),
           ),
           const SizedBox(width: 8),
+
           if (_presets.isNotEmpty)
             DropdownButton<String>(
               hint: const Text('选'),
+              isExpanded: false,
+              // ✅ 下拉菜单弹出宽度（在 3.7+ 生效；老版本会忽略，不报错）
+              menuWidth: 380,
+              // ✅ 菜单最大高度，避免一屏放不下
+              menuMaxHeight: 480,
               items: _presets
-                  .take(200)
-                  .map((p) => DropdownMenuItem(value: p, child: Text(p)))
+                  .take(500)
+                  .map((p) => DropdownMenuItem(
+                        value: p,
+                        child: Text(
+                          p,
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                          style: const TextStyle(fontSize: 13),
+                        ),
+                      ))
                   .toList(),
-              
-			  onChanged: (v) {
-			    if (v == null || v.isEmpty) return;
-			    // "mecha_glow — 机甲发光" → "mecha_glow"
-			    final name = v.contains(' — ')
-			  	  ? v.split(' — ').first.trim()
-			  	  : v.trim();
-			    setState(() => _presetCtrl.text = name);
-			  },			  
+              onChanged: (v) {
+                if (v == null || v.isEmpty) return;
+                var s = v.trim();
+                if (s.startsWith('[')) {
+                  final end = s.indexOf(']');
+                  if (end > 0) s = s.substring(end + 1).trim();
+                }
+                if (s.contains(' — ')) {
+                  s = s.split(' — ').first.trim();
+                }
+                setState(() => _presetCtrl.text = s);
+              },
             ),
+
         ]),
         const SizedBox(height: 12),
         Row(children: [

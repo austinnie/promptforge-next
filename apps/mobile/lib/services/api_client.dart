@@ -91,19 +91,22 @@ class ApiClient {
         // 后端返回：{"机甲": [{name, display}, ...], "国风": [...], ...}
         if (data is Map) {
           for (final entry in data.entries) {
+            final cat = entry.key.toString();
             final v = entry.value;
             if (v is List) {
               for (final item in v) {
                 if (item is Map) {
                   final display = item['display']?.toString();
                   final name = item['name']?.toString();
-                  if (display != null && display.isNotEmpty) {
-                    result.add(display);
-                  } else if (name != null && name.isNotEmpty) {
-                    result.add(name);
+                  final label = (display != null && display.isNotEmpty)
+                      ? display
+                      : name;
+                  if (label != null && label.isNotEmpty) {
+                    // ✅ 加分类前缀：[机甲] mecha_glow — 机甲发光
+                    result.add('[$cat] $label');
                   }
                 } else if (item is String) {
-                  result.add(item);
+                  result.add('[$cat] $item');
                 }
               }
             }
