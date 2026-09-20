@@ -10,7 +10,7 @@ from server.core.config import settings
 from server.core.events import event_bus
 from server.infrastructure.jobs import job_store
 from server.infrastructure.storage import get_storage
-
+from server.application.use_cases._naming import make_key
 
 async def _pub(job_id: str, progress: int, message: str, **extra):
     await job_store.update(job_id, progress=progress, message=message, **extra)
@@ -77,7 +77,7 @@ async def run_image_job(job_id: str, cmd: dict) -> None:
         await _pub(job_id, 85, "保存文件")
         buf = io.BytesIO()
         img.save(buf, format="PNG")
-        key = f"{job_id}.png"
+        key = make_key(final_prompt, job_id, ext="png")
         storage = get_storage()
         await storage.save(key, buf.getvalue())
         url = await storage.url_for(key)
