@@ -172,6 +172,29 @@ SKILL_REGISTRY: dict[str, dict] = {
                 ],
             },
         ],
+    }, 
+
+    "image_curator": {
+        "name": "图片鉴赏",
+        "description": "用视觉模型给一组图片写鉴赏描述，生成图文文章",
+        "version": "2.0.0",
+        "actions": [
+            {
+                "id": "curate",
+                "name": "生成鉴赏文章",
+                "params": [
+                    {"name": "directory", "type": "string", "default": "",
+                     "description": "服务器本地目录（本机用）"},
+                    {"name": "image_urls", "type": "list", "default": [],
+                     "description": "图片 URL 列表（Web 用，如 ['/files/xxx.png']）"},
+                    {"name": "title", "type": "string", "default": ""},
+                    {"name": "intro", "type": "string", "default": ""},
+                    {"name": "recursive", "type": "boolean", "default": False},
+                    {"name": "max_images", "type": "integer", "default": 100},
+                    {"name": "with_intro", "type": "boolean", "default": True},
+                ],
+            },
+        ],
     },    
 }
 
@@ -259,7 +282,11 @@ def _load_skill(name: str):
             
         elif name == "news_aggregator":
             from skills.news_aggregator import NewsAggregator
-            inst = NewsAggregator()            
+            inst = NewsAggregator()   
+
+        elif name == "image_curator":
+            from skills.image_curator import ImageCurator
+            inst = ImageCurator()            
         else:
             return None
     except Exception:
