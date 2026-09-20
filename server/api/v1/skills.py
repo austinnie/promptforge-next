@@ -243,6 +243,44 @@ SKILL_REGISTRY: dict[str, dict] = {
             },
         ],
     },    
+
+    "daily_pipeline": {
+        "name": "每日自动化",
+        "description": "生成图片 → AI 鉴赏写文章 → 微信排版 → 推送草稿箱",
+        "version": "2.0.0",
+        "actions": [
+            {
+                "id": "run",
+                "name": "执行全流程",
+                "params": [
+                    {"name": "topic", "type": "string", "default": "",
+                     "description": "主题（不填则随机）"},
+                    {"name": "preset", "type": "string", "default": "",
+                     "description": "预设（不填则智能匹配）"},
+                    {"name": "preset_category", "type": "string", "default": ""},
+                    {"name": "count", "type": "integer", "default": 6},
+                    {"name": "theme", "type": "string", "default": "newspaper"},
+                    {"name": "vary_preset", "type": "boolean", "default": False},
+                    {"name": "publish", "type": "boolean", "default": False,
+                     "description": "是否推送公众号草稿箱"},
+                    {"name": "skip_generate", "type": "boolean", "default": False},
+                    {"name": "skip_curate", "type": "boolean", "default": False},
+                    {"name": "image_dir", "type": "string", "default": "",
+                     "description": "skip_generate=True 时必填"},
+                ],
+            },
+            {
+                "id": "list_presets",
+                "name": "列出预设",
+                "params": [],
+            },
+            {
+                "id": "list_topics",
+                "name": "列出主题",
+                "params": [],
+            },
+        ],
+    },    
 }
 
 
@@ -337,7 +375,11 @@ def _load_skill(name: str):
 
         elif name == "wechat_formatter":
             from skills.wechat_formatter import WechatFormatter
-            inst = WechatFormatter()            
+            inst = WechatFormatter() 
+
+        elif name == "daily_pipeline":
+            from skills.daily_pipeline import DailyPipeline
+            inst = DailyPipeline()            
         else:
             return None
     except Exception:
