@@ -45,11 +45,11 @@ class _HomePageState extends State<HomePage> {
               Icon(
                 Icons.circle,
                 size: 10,
-                color: cm.wsOnline ? Colors.green : Colors.red,
+                color: cm.httpOnline ? Colors.green : Colors.red,
               ),
               const SizedBox(width: 6),
               Text(
-                cm.wsOnline ? '在线' : '离线',
+                cm.httpOnline ? '在线' : '离线',
                 style: const TextStyle(fontSize: 12),
               ),
             ]),
