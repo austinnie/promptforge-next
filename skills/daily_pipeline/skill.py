@@ -47,7 +47,7 @@ class DailyPipeline:
             "theme": "newspaper",
             "count": 6,
             "topics_file": "./data/topics.txt",
-            "auto_publish": False,   # 默认不推送（微信凭证未必配好）
+            "auto_publish": True,   # 默认不推送（微信凭证未必配好）
             "image_size": 1024,
         }
         for k, v in defaults.items():
