@@ -195,6 +195,53 @@ SKILL_REGISTRY: dict[str, dict] = {
                 ],
             },
         ],
+    }, 
+
+    
+    "wechat_formatter": {
+        "name": "公众号排版",
+        "description": "Markdown 一键排版为微信公众号 HTML（33 主题）",
+        "version": "2.0.0",
+        "actions": [
+            {
+                "id": "format",
+                "name": "排版",
+                "params": [
+                    {"name": "input", "type": "string", "default": "",
+                     "description": "Markdown 文件路径（服务器本地）"},
+                    {"name": "content", "type": "string", "default": "",
+                     "description": "或直接传 Markdown 文本"},
+                    {"name": "theme", "type": "string", "default": "newspaper",
+                     "description": "主题名，如 newspaper / terracotta / bytedance"},
+                    {"name": "gallery", "type": "boolean", "default": False,
+                     "description": "是否生成画廊（多主题预览）"},
+                    {"name": "enhance", "type": "boolean", "default": False,
+                     "description": "是否启用 AI 内容增强"},
+                ],
+            },
+            {
+                "id": "list_themes",
+                "name": "列出主题",
+                "params": [],
+            },
+            {
+                "id": "generate_cover",
+                "name": "生成封面",
+                "params": [
+                    {"name": "title", "type": "string", "required": True},
+                    {"name": "topic", "type": "string", "default": ""},
+                ],
+            },
+            {
+                "id": "publish",
+                "name": "推送草稿箱",
+                "params": [
+                    {"name": "article_dir", "type": "string", "required": True},
+                    {"name": "cover_path", "type": "string", "default": ""},
+                    {"name": "title", "type": "string", "default": ""},
+                ],
+            },
+        ],
     },    
 }
 
@@ -286,7 +333,11 @@ def _load_skill(name: str):
 
         elif name == "image_curator":
             from skills.image_curator import ImageCurator
-            inst = ImageCurator()            
+            inst = ImageCurator()   
+
+        elif name == "wechat_formatter":
+            from skills.wechat_formatter import WechatFormatter
+            inst = WechatFormatter()            
         else:
             return None
     except Exception:
