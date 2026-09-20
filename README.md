@@ -14,6 +14,8 @@
 ~~~bash
 pip install -r requirements-server.txt
 python -m server.run
+或者
+python -m uvicorn server.main:app --host 0.0.0.0 --port 8000 --reload
 ~~~
 
 启动后：
@@ -26,10 +28,16 @@ python -m server.run
 ~~~bash
 cd apps/mobile
 flutter pub get
+flutter run -d chrome
+flutter run -d web
 flutter run -d windows      # Windows 桌面
 flutter run -d macos        # macOS
 flutter run -d linux        # Linux
 flutter run                 # 连 Android/iOS 真机
+
+
+flutter devices      # 看手机连没连上
+flutter run -d <手机ID>   # 直接推送到手机，支持热重载
 ~~~
 
 ## 目录结构
