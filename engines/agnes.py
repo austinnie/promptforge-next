@@ -19,17 +19,21 @@ from PIL import Image
 
 from .base import BaseEngine
 from .registry import register
-
+import logging 
+logger = logging.getLogger(__name__)   # ← 新增
 
 @register("agnes")
 class AgnesEngine(BaseEngine):
     CAPABILITIES = {"t2i", "i2i", "chat", "vision", "video", "audio"}
 
+    #ROUTES = [
+    #    "https://apihub.agnes-ai.com/v1",
+    #    "https://apihub.agnes-ai.cn/v1",
+    #    "https://api.agnes-ai.cn/v1",
+    #]
     ROUTES = [
         "https://apihub.agnes-ai.com/v1",
-        "https://apihub.agnes-ai.cn/v1",
-        "https://api.agnes-ai.cn/v1",
-    ]
+    ]    
 
     DEFAULT_MODELS = {
         "t2i": "agnes-image-2.1-flash",
@@ -116,7 +120,7 @@ class AgnesEngine(BaseEngine):
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json",
         }
-        max_attempts = len(self._routes) * 2
+        max_attempts = len(self._routes) * 4   # 503 时给更多重试机会
         last_err: Exception | None = None
 
         for _ in range(max_attempts):
@@ -126,12 +130,31 @@ class AgnesEngine(BaseEngine):
                 resp = requests.post(url, headers=headers, json=data, timeout=timeout)
                 self._last_request = time.time()
 
+                # 503 服务端临时故障（如视频队列满）：不切路由，等待后重试
                 if resp.status_code == 503:
-                    self._failed_routes.add(route)
+                    try:
+                        body = resp.json()
+                        code = body.get("code", "")
+                    except Exception:
+                        code = ""
+                    wait = 20 if code == "video_queue_full" else 5
+                    logger.warning(
+                        f"[agnes] {route} 503 ({code or 'busy'})，{wait}s 后重试同路由"
+                    )
+                    time.sleep(wait)
                     continue
+
+                # 429 限流：等待后重试同路由
                 if resp.status_code == 429:
                     time.sleep(3)
                     continue
+
+                # 401/403 认证失败：当前路由不接受此 key，切下一个
+                if resp.status_code in (401, 403):
+                    logger.warning(f"[agnes] {route} 认证失败 {resp.status_code}，切换路由")
+                    self._failed_routes.add(route)
+                    continue
+
                 if resp.status_code != 200:
                     try:
                         err = resp.json()

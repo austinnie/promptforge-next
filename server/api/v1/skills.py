@@ -280,7 +280,33 @@ SKILL_REGISTRY: dict[str, dict] = {
                 "params": [],
             },
         ],
-    },    
+    },  
+    
+    "video_generator": {
+        "name": "视频生成",
+        "description": "文生视频 + 长视频分段拼接（ffmpeg 可选）",
+        "version": "2.0.0",
+        "actions": [
+            {
+                "id": "generate",
+                "name": "生成视频",
+                "params": [
+                    {"name": "prompt", "type": "string", "required": True},
+                    {"name": "duration", "type": "integer", "default": 60,
+                     "min": 4, "max": 600,
+                     "description": "目标时长（秒）"},
+                    {"name": "segment_duration", "type": "integer",
+                     "default": 10, "min": 4, "max": 12,
+                     "description": "单段时长（Agnes 单段上限 12s）"},
+                    {"name": "width", "type": "integer", "default": 768},
+                    {"name": "height", "type": "integer", "default": 768},
+                    {"name": "auto_merge", "type": "boolean", "default": True,
+                     "description": "是否自动分段合并（关掉则单段生成）"},
+                ],
+            },
+        ],
+    },
+    
 }
 
 
@@ -379,7 +405,11 @@ def _load_skill(name: str):
 
         elif name == "daily_pipeline":
             from skills.daily_pipeline import DailyPipeline
-            inst = DailyPipeline()            
+            inst = DailyPipeline() 
+            
+        elif name == "video_generator":
+            from skills.video_generator import VideoGenerator
+            inst = VideoGenerator()            
         else:
             return None
     except Exception:

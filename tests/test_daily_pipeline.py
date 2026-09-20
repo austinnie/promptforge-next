@@ -2,18 +2,19 @@
 # -*- coding: utf-8 -*-
 """daily_pipeline 验收。
 
-默认只跑「3 张图 + 鉴赏 + 排版，不推送」的最小流程。
-全流程会消耗大量 agnes 额度（6 图 + vision + 排版），谨慎运行。
+默认：3 张图 + 鉴赏 + 排版，不推送。
+--full：6 张图
+--publish：启用推送（需配微信凭证）
 
 用法：
-    python tests/test_daily_pipeline.py           # 3 张 + 不推送
-    python tests/test_daily_pipeline.py --full    # 6 张 + 推送
+    python tests/test_daily_pipeline.py              # 3 张，不推送
+    python tests/test_daily_pipeline.py --full       # 6 张，不推送
+    python tests/test_daily_pipeline.py --publish    # 3 张 + 推送
 """
 
 import argparse
 import asyncio
 import sys
-import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -22,7 +23,7 @@ sys.path.insert(0, str(ROOT))
 from skills.daily_pipeline import DailyPipeline  # noqa: E402
 
 
-async def main(full: bool):
+async def main(full: bool = False, publish: bool = False):
     print("=" * 60)
     print("  daily_pipeline 验收")
     print("=" * 60)
@@ -45,14 +46,17 @@ async def main(full: bool):
         total = sum(len(v) for v in styles.values())
         print(f"    风格数: {len(styles)}  主题总数: {total}")
 
-    # 3. 全流程（小规模）
-    print(f"\n[3] run（{'完整 6 张' if full else '最小 3 张'}，不推送）")
+    # 3. 全流程
+    label = "完整 6 张" if full else "最小 3 张"
+    push_label = "启用推送" if publish else "不推送"
+    print(f"\n[3] run（{label}，{push_label}）")
+
     r = await pipe.execute(
         action="run",
         topic="月下松林",
         count=6 if full else 3,
         theme="newspaper",
-        publish=False,
+        publish=publish,
     )
     print(f"    状态: {r['status']}")
     if r["status"] == "success":
@@ -76,6 +80,8 @@ async def main(full: bool):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--full", action="store_true",
-                        help="完整流程（6 张 + 推送）")
+                        help="完整流程（6 张）")
+    parser.add_argument("--publish", action="store_true",
+                        help="启用推送（需配微信凭证）")
     args = parser.parse_args()
-    asyncio.run(main(args.full))
+    asyncio.run(main(full=args.full, publish=args.publish))
